@@ -23,7 +23,7 @@ export const useOrganization = (id: number) => {
   });
 }
 
-export const useCreateOrganizations = () => {
+export const useCreateOrganization = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
