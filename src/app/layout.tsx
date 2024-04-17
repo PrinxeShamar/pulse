@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+import { QCProvider } from "@/components/QCProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +19,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <QCProvider>
+          <Theme appearance="dark" accentColor="blue" className="flex flex-col">
+            {children}
+          </Theme>
+        </QCProvider>
+      </body>
     </html>
   );
 }
