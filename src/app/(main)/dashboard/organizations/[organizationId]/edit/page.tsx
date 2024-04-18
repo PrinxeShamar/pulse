@@ -21,7 +21,6 @@ export default function Page({
 }: {
   params: { organizationId: string };
 }) {
-  const [name, setName] = useState("");
   const { data: organization } = useOrganization(Number(organizationId));
 
   if (organization) {

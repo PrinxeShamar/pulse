@@ -15,7 +15,7 @@ import {
   Separator,
   Text,
 } from "@radix-ui/themes";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useSignOut, useUser } from "@/stores/authQuery";
 import { useSchedules } from "@/stores/scheduleQuery";
 import { prisma } from "@/utils/prisma/client";
@@ -44,18 +44,16 @@ const CalendarComponentItem = ({ component }: { component: any }) => {
   );
 };
 
-export default function Home() {
+export default function Layout({
+  children,
+  params: { organizationId },
+}: {
+  children: React.ReactNode;
+  params: { organizationId: string };
+}) {
+  const router = useRouter();
   const { data: schedules } = useSchedules();
   const [selectedScheduleId, setSelectedScheduleId] = useState<number>();
-
-  const { data: user, isLoading } = useUser();
-  const signOut = useSignOut();
-
-  useEffect(() => {
-    if (user === null && !isLoading) {
-      redirect("/signin");
-    }
-  }, [user, isLoading]);
 
   return (
     <Flex className="flex-1" direction={"column"}>
@@ -64,10 +62,22 @@ export default function Home() {
           <Panel defaultSize={20}>
             <PanelGroup direction="vertical">
               <Panel className="flex flex-col" defaultSize={30}>
-                <Flex p={"2"}>
+                <Flex p={"4"} gap="2" align={"center"}>
                   <Text size={"1"} weight={"medium"}>
                     Schedules
                   </Text>
+                  <Button
+                    variant="outline"
+                    color="green"
+                    size="1"
+                    onClick={() =>
+                      router.push(
+                        `/organizations/${organizationId}/schedules/create`
+                      )
+                    }
+                  >
+                    Create
+                  </Button>
                 </Flex>
                 <Separator size={"4"} />
                 <Flex direction={"column"} p={"2"} gap={"2"}>
@@ -93,13 +103,13 @@ export default function Home() {
                 <Separator size={"4"} />
               </PanelResizeHandle>
               <Panel className="flex flex-col">
-                <Flex p={"2"}>
+                <Flex p={"4"}>
                   <Text size={"1"} weight={"medium"}>
                     Calendar Components
                   </Text>
                 </Flex>
                 <Separator size={"4"} />
-                <Flex direction={"column"} p={"2"} gap={"2"}>
+                <Flex direction={"column"} p={"4"} gap={"2"}>
                   {calendarComponents.map((component, idx) => {
                     return (
                       <CalendarComponentItem key={idx} component={component} />
@@ -112,11 +122,7 @@ export default function Home() {
           <PanelResizeHandle>
             <Separator size={"4"} orientation={"vertical"} />
           </PanelResizeHandle>
-          <Panel className="flex flex-col flex-1">
-            {selectedScheduleId && (
-              <ScheduleComponent id={selectedScheduleId} />
-            )}
-          </Panel>
+          <Panel className="flex flex-col flex-1">{children}</Panel>
         </PanelGroup>
       </DndProvider>
     </Flex>
